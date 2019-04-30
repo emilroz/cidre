@@ -30,7 +30,7 @@ configurations.all {
 dependencies {
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-    compile group: 'ome', name: 'formats-gpl', version: '5.3.3-SNAPSHOT'
+    compile group: 'ome', name: 'formats-gpl', version: '5.9.2-SNAPSHOT'
     compile 'net.sourceforge.argparse4j:argparse4j:0.7.0'
     testCompile 'org.testng:testng:6.9.10'
 }
