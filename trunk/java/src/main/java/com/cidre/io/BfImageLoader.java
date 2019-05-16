@@ -95,12 +95,15 @@ public class BfImageLoader extends ImageLoader {
             this.readers.add(reader);
         }
         // store the number of source images into the options structure
-        if (true) { // For now no z or t support!
-            this.options.numImagesProvided = this.sizeS;
-        } else {
-            this.options.numImagesProvided =
-                this.sizeS * this.sizeT * this.sizeZ;
-        }
+        int numberOfS =
+            this.series.isEmpty() ? this.sizeS : this.series.size();
+        int numberOfT =
+            this.timepoints.isEmpty() ? this.sizeT : this.timepoints.size();
+        int numberOfZ =
+            this.zSections.isEmpty() ? this.sizeZ : this.zSections.size();
+        this.options.numImagesProvided = numberOfS * numberOfT * numberOfZ;
+        log.info("Using {} images to build the model",
+                 this.options.numImagesProvided);
         if (this.options.numImagesProvided <= 0) {
             log.error("Empty dimension found. Nothing to read.");
             return false;
@@ -135,7 +138,7 @@ public class BfImageLoader extends ImageLoader {
         } else {
             this.maxT = -1;
         }
-        if (!this.timepoints.isEmpty()) {
+        if (!this.zSections.isEmpty()) {
             this.maxZ = Collections.max(this.zSections);
         } else {
             this.maxZ = -1;
@@ -165,11 +168,13 @@ public class BfImageLoader extends ImageLoader {
             this.series = IntStream.range(0, this.sizeS).boxed().collect(
                 Collectors.toList());
         }
-        if (this.timepoints.size() == 0) {
-            this.timepoints.add(0);
+        if (this.timepoints.isEmpty()) {
+            this.timepoints = IntStream.range(0, this.sizeT).boxed().collect(
+                Collectors.toList());
         }
-        if (this.zSections.size() == 0) {
-            this.zSections.add(0);
+        if (this.zSections.isEmpty()) {
+            this.zSections = IntStream.range(0, this.sizeZ).boxed().collect(
+                Collectors.toList());
         }
     }
 
@@ -426,6 +431,9 @@ public class BfImageLoader extends ImageLoader {
         double min, max;
         double[][] minImage = new double[this.sizeX][this.sizeY];
         int planeCounter = 0;
+        log.info("Image dimensions. S: {}, T: {}, Z: {}",
+                 this.series.size(), this.timepoints.size(),
+                 this.zSections.size());
         log.info(
             "Loading {} planes",
             this.series.size() * this.timepoints.size() *
