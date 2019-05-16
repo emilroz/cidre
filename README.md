@@ -30,7 +30,7 @@ Installation
 
 To install the ImageJ plugin, simply copy `Cidre_Plugin.jar` to the plugins folder of your ImageJ or Fiji installation. For instructions on how to use the Matlab implementation, add the CIDRE/matlab folder to your path and type `help cidre`.
 
-To build stand alone application run `./gradlew distZip` or `gradlew.bat distZip` from `java` directory. After successful built the application is available from `java/build/distributions/`.
+To build stand alone application run `./gradlew distZip` or `gradlew.bat distZip` from the `java` directory. After successful build the application is available from the `java/build/distributions/` directory.
 
 ============
 
