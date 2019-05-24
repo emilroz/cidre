@@ -79,7 +79,7 @@ public class Main {
         log.info("CIDRE started");
 
         ArgumentParser parser =
-            ArgumentParsers.newArgumentParser("stitcher");
+            ArgumentParsers.newArgumentParser("cidre");
         parser.description("Passing Folder or ");
         parser.addArgument("--input")
               .nargs("*")
