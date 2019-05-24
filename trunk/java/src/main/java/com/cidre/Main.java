@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cidre.core.Cidre;
 import com.cidre.core.Options;
+import com.cidre.core.Options.CorrectionMode;
 
 import ch.qos.logback.classic.Level;
 import net.sourceforge.argparse4j.ArgumentParsers;
@@ -70,7 +71,7 @@ public class Main {
     private Boolean overwrite;
 
     @Arg
-    private Options.CorrectionMode illuminationCorrectionMode;
+    private CorrectionMode illuminationCorrectionMode;
 
     private static final Logger log =
         LoggerFactory.getLogger(Main.class);
@@ -95,19 +96,22 @@ public class Main {
               .help("Output directory where a multi-channel model file "
                     + "per input file / set of files will be created.");
         parser.addArgument("--output")
-              .help("Output directory for corrected images.");
+              .help("Output directory for corrected images.  Will also "
+                    + "enable image correction mode.");
         parser.addArgument("--channels").nargs("*").type(Integer.class)
               .help("Channel indexes (from 0) to calculate the illumination "
                     + "correction for (default: all).");
         parser.addArgument("--illuminationCorrectionMode")
               .choices(Options.CorrectionMode.values())
               .setDefault(Options.CorrectionMode.ZERO_LIGHT_PRESERVED)
-              .help("IlluminationCorrection mode.  'Zero-light preserved' "
+              .help("IlluminationCorrection mode if `--output` is specified. "
+                    + "'Zero-light preserved' "
                     + "retains the original intensity range and zero-light "
-                    + "level of the original images. 'Dynamic range corrected' "
-                    + "retains the intensity range of the original images. "
-                    + "'Direct' subtracts the zero-light term and divides "
-                    + "the illumination gain. (default: ZERO_LIGHT_PRESERVED)");
+                    + "level of the original images.  'Dynamic range "
+                    + "corrected' retains the intensity range of the original "
+                    + "images.  'Direct' subtracts the zero-light term and "
+                    + "divides the illumination gain. (default: "
+                    + "ZERO_LIGHT_PRESERVED)");
         parser.addArgument("--planePerFile")
               .action(Arguments.storeTrue())
               .help("Use this option if the planes are stored one per file"
@@ -157,44 +161,6 @@ public class Main {
         }
     }
 
-    private ArrayList<String> getFileList(ArrayList<String> inputList) {
-        ArrayList<String> fileList = new ArrayList<String>();
-        if (inputList == null) {
-            return fileList;
-        }
-        for (String inputName : inputList) {
-            File file = new File(inputName);
-            String path, fileName;
-            if (file.isDirectory()) {
-                path = file.toString() + File.separator;
-                fileName = "*";
-            } else {
-                path = file.getParent() + File.separator;
-                fileName = file.getName();
-            }
-            File directory = new File(path);
-            log.debug("Searching for files in {}", directory.toString());
-            File[] listOfFiles = directory.listFiles(
-                new ImageNameFilter(fileName));
-            if (listOfFiles != null) {
-                log.debug("{}", listOfFiles.toString());
-                for (int i = 0; i < listOfFiles.length; i++) {
-                    if (listOfFiles[i].getName().startsWith(".")) {
-                        continue;
-                    }
-                    if (listOfFiles[i].isDirectory()) {
-                        continue;
-                    }
-                    fileList.add(path + listOfFiles[i].getName());
-                    log.info("Adding {} to input",
-                              path + listOfFiles[i].getName());
-                }
-            }
-        }
-        log.debug("File list: {}", fileList);
-        return fileList;
-    }
-
     public void printOptions(Options options) {
         log.info(
             "CidreOptions:\n\tlambdaVreg: {}\n\tlambdaZero: {}" +
@@ -225,7 +191,8 @@ public class Main {
             Cidre cidre = new Cidre(
                 this.input.get(0), this.output,
                 this.modelFile, this.modelOutput,
-                this.useMinImage, this.skipPreprocessing);
+                this.useMinImage, this.skipPreprocessing,
+                this.illuminationCorrectionMode);
             if (this.channels != null && this.channels.size() > 0) {
                 cidre.setChannelsToProcess(this.channels);
             }
@@ -235,7 +202,8 @@ public class Main {
                 Cidre cidre = new Cidre(
                     fileName, this.output,
                     this.modelFile, this.modelOutput,
-                    this.useMinImage, this.skipPreprocessing);
+                    this.useMinImage, this.skipPreprocessing,
+                    this.illuminationCorrectionMode);
                 if (this.channels != null && this.channels.size() > 0) {
                     cidre.setChannelsToProcess(this.channels);
                 }
