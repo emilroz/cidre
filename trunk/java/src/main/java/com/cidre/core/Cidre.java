@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cidre.algorithms.CidreMath;
+import com.cidre.core.Options.CorrectionMode;
 import com.cidre.io.BfImageLoader;
 import com.cidre.io.BfModelLoader;
 import com.cidre.io.BfModelWriter;
@@ -80,17 +81,12 @@ public class Cidre {
 
     private ArrayList<Integer> channelsToProcess;
 
-    private Options.CorrectionMode correctionMode =
-        Options.CorrectionMode.ZERO_LIGHT_PRESERVED;
-
-    public Cidre(String fileName, String outputDir) {
-        this.input = fileName;
-        this.outputDir = outputDir;
-    };
+    private final CorrectionMode correctionMode;
 
     public Cidre(String fileName, String outputDir,
                  String modelInput, String modelOutputDir,
-                 boolean useMinImage, boolean skipPreprocessing)
+                 boolean useMinImage, boolean skipPreprocessing,
+                 CorrectionMode correctionMode)
     {
         this.input = fileName;
         this.outputDir = outputDir;
@@ -98,6 +94,7 @@ public class Cidre {
         this.modelOutputDir = modelOutputDir;
         this.useMinImage = useMinImage;
         this.skipPreProcessing = skipPreprocessing;
+        this.correctionMode = correctionMode;
     }
 
     public void setChannelsToProcess(ArrayList<Integer> channelsToProcess) {
@@ -177,8 +174,7 @@ public class Cidre {
         try {
             this.imageLoader.initialise();
         } catch (Exception e) {
-            log.error(e.toString());
-            e.printStackTrace();
+            log.error("Error during initialization", e);
             return null;
         }
         if (this.skipPreProcessing) {
@@ -202,8 +198,7 @@ public class Cidre {
             try {
                 this.imageLoader.loadImages(channel);
             } catch (Exception e) {
-                log.error(e.toString());
-                e.printStackTrace();
+                log.error("Error during image loading", e);
                 return null;
             }
             if (this.useMinImage) {
@@ -316,20 +311,5 @@ public class Cidre {
         }
         writer.close();
     };
-
-    private void printOptions(Options options){
-        log.info(
-            "CidreOptions:\n\tlambdaVreg: {}\n\tlambdaZero: {}" +
-            "\n\tmaxLbgfsIterations: {}\n\tqPercent: {}\n\tzLimits:{}, {}" +
-            "\n\timageSize: {}\n\tnumImagesProvided: {}\n\tbitDepth: {}" +
-            "\n\tcorrectionMode: {}\n\ttargetNumPixels: {}" +
-            "\n\tworkingSize: {}\n\tnumberOfQuantiles: {}",
-            options.lambdaVreg, options.lambdaZero, options.maxLbgfsIterations,
-            options.qPercent, options.zLimits[0], options.zLimits[1],
-            options.imageSize, options.numImagesProvided, options.bitDepth,
-            options.correctionMode, options.targetNumPixels,
-            options.workingSize, options.numberOfQuantiles
-        );
-    }
 
 }

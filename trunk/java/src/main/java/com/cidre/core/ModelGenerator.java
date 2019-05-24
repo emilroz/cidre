@@ -402,7 +402,7 @@ public class ModelGenerator {
             writer.write(Q, 0);
             writer.close();
         } catch (Exception ex) {
-            log.error("Couldn't save Q");
+            log.error("Couldn't save Q", ex);
         }
         return Q;
     }
