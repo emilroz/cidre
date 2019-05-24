@@ -81,43 +81,51 @@ public class Main {
         ArgumentParser parser =
             ArgumentParsers.newArgumentParser("stitcher");
         parser.description("Passing Folder or ");
-        parser.addArgument("--input").nargs("*")
+        parser.addArgument("--input")
+              .nargs("*")
+              .required(true)
               .help("Directory path, file path, list of file paths or "
-                   + "file path masks are valid inputs.\n"
-                   + "One model file per input file will be created unless "
-                   + "`planePerFile` flag is specified.");
+                    + "file path masks are valid inputs.\n"
+                    + "One model file per input file will be created unless "
+                    + "`--planePerFile` flag is specified.");
         parser.addArgument("--model")
               .nargs("*")
               .help("Select a file with the model to apply.");
         parser.addArgument("--modelOutput")
-              .help("Output directory.\n"
-                  + "A multi-channel model file per input file / set of files "
-                  + "will be created.");
+              .help("Output directory where a multi-channel model file "
+                    + "per input file / set of files will be created.");
         parser.addArgument("--output")
               .help("Output directory for corrected images.");
         parser.addArgument("--channels").nargs("*").type(Integer.class)
-              .help("Select channels to calculate "
-                    + "the illumination correction for.");
+              .help("Channel indexes (from 0) to calculate the illumination "
+                    + "correction for (default: all).");
         parser.addArgument("--illuminationCorrectionMode")
               .choices(Options.CorrectionMode.values())
               .setDefault(Options.CorrectionMode.ZERO_LIGHT_PRESERVED)
-              .help("Select IlluminationCorrection mode.");
+              .help("IlluminationCorrection mode.  'Zero-light preserved' "
+                    + "retains the original intensity range and zero-light "
+                    + "level of the original images. 'Dynamic range corrected' "
+                    + "retains the intensity range of the original images. "
+                    + "'Direct' subtracts the zero-light term and divides "
+                    + "the illumination gain. (default: ZERO_LIGHT_PRESERVED)");
         parser.addArgument("--planePerFile")
               .action(Arguments.storeTrue())
               .help("Use this option if the planes are stored one per file"
-                  + " rather then all in a single file.");
+                    + " rather then all in a single file.");
         parser.addArgument("--useMinImage")
               .action(Arguments.storeTrue())
-              .help("Use min(stack) as zero current image.");
+              .help("Use min(stack) image as starting point for illumination "
+                    + "correction.");
         parser.addArgument("--skipPreprocessing")
               .action(Arguments.storeTrue())
-              .help("Skip preprocessing.");
+              .help("Skip data reduction by resizing stack if total "
+                    + "stack size > 200");
         parser.addArgument("--debug")
               .action(Arguments.storeTrue())
-              .help("Set logging level to Debug");
+              .help("Set logging level to DEBUG");
         parser.addArgument("--overwrite")
               .action(Arguments.storeTrue())
-              .help("Overwrite output files if exist");
+              .help("Overwrite output file(s) if exist");
 
         Main main = new Main();
         try {
