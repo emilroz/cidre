@@ -177,8 +177,7 @@ public class Cidre {
         try {
             this.imageLoader.initialise();
         } catch (Exception e) {
-            log.error(e.toString());
-            e.printStackTrace();
+            log.error("Error during initialization", e);
             return null;
         }
         if (this.skipPreProcessing) {
@@ -202,8 +201,7 @@ public class Cidre {
             try {
                 this.imageLoader.loadImages(channel);
             } catch (Exception e) {
-                log.error(e.toString());
-                e.printStackTrace();
+                log.error("Error during image loading", e);
                 return null;
             }
             if (this.useMinImage) {
