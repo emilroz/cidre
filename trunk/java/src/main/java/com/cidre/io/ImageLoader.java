@@ -143,13 +143,11 @@ public abstract class ImageLoader {
         double scaleWorking = Math.sqrt(
             (double) Ndesired / (widthOriginal * heightOriginal));
 
-        log.info("Wokring scale: {}, working size [{}, {}]",
-                 scaleWorking,
-                 (int) Math.round(widthOriginal * scaleWorking),
-                 (int) Math.round(heightOriginal * scaleWorking));
-        return new Dimension(
-            (int) Math.round(widthOriginal * scaleWorking),
-            (int) Math.round(heightOriginal * scaleWorking));
+        int width = (int) Math.round(widthOriginal * scaleWorking);
+        int height = (int) Math.round(heightOriginal * scaleWorking);
+        log.info("Working scale: {}, working size [{}, {}]",
+                 scaleWorking, width, height);
+        return new Dimension(width, height);
     }
 
     protected double findMax(double[][] image) {
