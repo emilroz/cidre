@@ -392,18 +392,6 @@ public class ModelGenerator {
             Q[z] = CidreMath.mean(doubleValues);
         }
         log.info("Q mean value: {}", CidreMath.mean(Q));
-        String fileName =
-            "/Users/emil/Documents/Data/HMS/output/details/Q.tif";
-        BfImageWriter writer = new BfImageWriter(
-                fileName, depth, 1,
-                FormatTools.getPixelTypeString(FormatTools.DOUBLE));
-        try {
-            writer.initialise();
-            writer.write(Q, 0);
-            writer.close();
-        } catch (Exception ex) {
-            log.error("Couldn't save Q", ex);
-        }
         return Q;
     }
 

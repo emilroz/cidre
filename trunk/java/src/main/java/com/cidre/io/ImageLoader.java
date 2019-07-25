@@ -143,13 +143,11 @@ public abstract class ImageLoader {
         double scaleWorking = Math.sqrt(
             (double) Ndesired / (widthOriginal * heightOriginal));
 
-        log.info("Wokring scale: {}, working size [{}, {}]",
-                 scaleWorking,
-                 (int) Math.round(widthOriginal * scaleWorking),
-                 (int) Math.round(heightOriginal * scaleWorking));
-        return new Dimension(
-            (int) Math.round(widthOriginal * scaleWorking),
-            (int) Math.round(heightOriginal * scaleWorking));
+        int width = (int) Math.round(widthOriginal * scaleWorking);
+        int height = (int) Math.round(heightOriginal * scaleWorking);
+        log.info("Working scale: {}, working size [{}, {}]",
+                 scaleWorking, width, height);
+        return new Dimension(width, height);
     }
 
     protected double findMax(double[][] image) {
@@ -210,7 +208,7 @@ public abstract class ImageLoader {
         this.resizeStack(options);
     }
 
-    private void setBitDepth() {
+    protected void setBitDepth() {
         // Sets options.bitDepth describing the provided images as 8-bit,
         // 12-bit, or  16-bit. If options.bitDepth is provided, it is used.
         // Otherwise the bit depth is estimated from the max observed

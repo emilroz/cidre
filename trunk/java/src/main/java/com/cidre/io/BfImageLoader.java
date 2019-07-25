@@ -43,6 +43,7 @@ import loci.formats.ImageReader;
 import loci.formats.in.DefaultMetadataOptions;
 import loci.formats.in.MetadataOptions;
 import loci.formats.services.OMEXMLService;
+import ome.xml.model.enums.PixelType;
 
 public class BfImageLoader extends ImageLoader {
 
@@ -67,6 +68,7 @@ public class BfImageLoader extends ImageLoader {
     private int sizeT;
     private int sizeZ;
     private int pixelType;
+    private int bitsPerPixel;
 
     private List<ImageReader> readers;
 
@@ -135,6 +137,28 @@ public class BfImageLoader extends ImageLoader {
     }
 
     @Override
+    protected void setBitDepth() {
+        // Sets options.bitDepth describing the provided images as 8-bit,
+        // 12-bit, or  16-bit. If options.bitDepth is provided, it is used.
+        // Otherwise the bit depth is estimated from the max observed
+        // intensity, maxI.
+        final int xy_2_8 = 256;
+        final int xy_2_12 = 4096;
+        final int xy_2_16 = 65536;
+
+        if (maxI > xy_2_12 && bitsPerPixel > 8) {
+             this.options.bitDepth = xy_2_16;
+        } else if (maxI > xy_2_8 && bitsPerPixel > 8) {
+             this.options.bitDepth = xy_2_12;
+        } else {
+             this.options.bitDepth = xy_2_8;
+        }
+         log.info(
+             " {}-bit depth images (estimated from max intensity={})",
+             Math.round(Math.log(options.bitDepth) / Math.log(2)), maxI);
+    }
+
+    @Override
     public boolean loadImages(int channel) throws Exception {
         log.info("Loading planes from channel {}", channel);
         if (!this.initialised) {
@@ -177,6 +201,7 @@ public class BfImageLoader extends ImageLoader {
         this.sizeX = reader.getSizeX();
         this.sizeY = reader.getSizeY();
         this.pixelType = reader.getPixelType();
+        this.bitsPerPixel = reader.getBitsPerPixel();
         if (!this.checkDimensions(reader)) {
             throw new Exception("Dimesion check failed.");
         }
