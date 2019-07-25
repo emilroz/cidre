@@ -208,7 +208,7 @@ public abstract class ImageLoader {
         this.resizeStack(options);
     }
 
-    private void setBitDepth() {
+    protected void setBitDepth() {
         // Sets options.bitDepth describing the provided images as 8-bit,
         // 12-bit, or  16-bit. If options.bitDepth is provided, it is used.
         // Otherwise the bit depth is estimated from the max observed
